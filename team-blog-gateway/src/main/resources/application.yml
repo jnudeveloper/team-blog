@@ -1,0 +1,17 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:7002/eureka/
+server:
+  port: 7004
+spring:
+  application:
+    name: team-blog-gateway
+zuul:
+  routes:
+    team-blog-user-service:
+      path: /user/**
+      serviceId: team-blog-user-service
+    team-blog-article-service:
+      path: /article/**
+      serviceId: team-blog-article-service
