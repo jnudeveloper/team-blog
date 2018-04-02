@@ -186,4 +186,12 @@ public class Article extends BasePO {
 		this.deleteFlag = deleteFlag;
 	}
 
+	@Override
+	public String toString() {
+		return "Article [id=" + id + ", content=" + content + ", title=" + title + ", summary=" + summary
+				+ ", authorId=" + authorId + ", status=" + status + ", readNum=" + readNum + ", likeNum=" + likeNum
+				+ ", commentNum=" + commentNum + ", order=" + order + ", postTime=" + postTime + ", createTime="
+				+ createTime + ", updateTime=" + updateTime + ", deleteFlag=" + deleteFlag + "]";
+	}
+
 }

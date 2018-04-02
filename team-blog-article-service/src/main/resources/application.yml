@@ -7,3 +7,13 @@ server:
 spring:
   application:
     name: team-blog-article-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/team_blog_article?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: 123
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update

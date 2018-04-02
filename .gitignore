@@ -13,3 +13,5 @@ target/
 Servers/
 *.class
 .recommenders
+team-blog-common/src/main/java/org/jchy/bean/BaseDTO.java
+team-blog-common/src/main/java/org/jchy/bean/QueryCondition.java
