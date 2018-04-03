@@ -1,7 +1,5 @@
 package org.jchy.service;
 
-import java.util.List;
-
 import org.jchy.domain.dto.ArticleDTO;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,7 +16,7 @@ public class ArticleServiceTest {
 	private ArticleService articleService;
 
 	@Test
-	public void testGetArticle() throws Exception {
+	public void testGetArticleAndIncrReadNum() throws Exception {
 		ArticleDTO articleDTO = articleService.getArticleAndIncrReadNum(1L);
 		System.out.println(articleDTO);
 		Assert.assertEquals("article1", articleDTO.getTitle());
@@ -26,8 +24,16 @@ public class ArticleServiceTest {
 
 	@Test
 	public void testListArticlesByAuthorId() throws Exception {
-		List<ArticleDTO> articleDTOs = articleService.listArticlesByAuthorId(1L, 0, 10, false);
-		System.out.println(articleDTOs);
+		articleService.listArticlesByAuthorId(1L, 0, 2, false).forEach(a -> {
+			System.out.println(a);
+		});
+	}
+	
+	@Test
+	public void testListArticles() {
+		articleService.listArticles().forEach(a -> {
+			System.out.println(a);
+		});
 	}
 	
 }

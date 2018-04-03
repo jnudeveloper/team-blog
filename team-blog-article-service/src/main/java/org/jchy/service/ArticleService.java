@@ -13,7 +13,13 @@ import org.jchy.domain.dto.CommentDTO;
  */
 public interface ArticleService {
 
-
+	/**
+	 * 毫无保留地展示所有文章
+	 * 
+	 * @return
+	 */
+	List<ArticleDTO> listArticles();
+	
 	/**
 	 * 根据用户id获取多条文章，分页默认10，按时间降序，需要注意状态位
 	 * 
@@ -40,6 +46,6 @@ public interface ArticleService {
 	 * @param id
 	 * @return
 	 */
-	CommentDTO listComments(Long articleId);
+	List<CommentDTO> listComments(Long articleId, int offset);
 
 }

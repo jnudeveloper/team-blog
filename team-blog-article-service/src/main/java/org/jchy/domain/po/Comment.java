@@ -2,22 +2,13 @@ package org.jchy.domain.po;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.jchy.bean.BasePO;
 
 @Entity
 @Table(name = "t_comment")
 public class Comment extends BasePO {
 
-	private static final long serialVersionUID = 2907424921164385776L;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	private static final long serialVersionUID = 6462826635034807985L;
 
 	/** 评论发起人的id */
 	@Column(name = "commenter_id")
@@ -38,17 +29,8 @@ public class Comment extends BasePO {
 	@Column(name = "parent_id")
 	private Long parentId;
 	
-	/** 删除标志 */
-	@Column(name = "delete_flag")
-	private Integer deleteFlag;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
+	/** 是否由作者发起 */
+	private Integer authorFlag;
 
 	public Long getCommenterId() {
 		return commenterId;
@@ -96,6 +78,21 @@ public class Comment extends BasePO {
 
 	public void setDeleteFlag(Integer deleteFlag) {
 		this.deleteFlag = deleteFlag;
+	}
+
+	public Integer getAuthorFlag() {
+		return authorFlag;
+	}
+
+	public void setAuthorFlag(Integer authorFlag) {
+		this.authorFlag = authorFlag;
+	}
+
+	@Override
+	public String toString() {
+		return "Comment [commenterId=" + commenterId + ", articleId=" + articleId + ", commenterName=" + commenterName
+				+ ", text=" + text + ", parentId=" + parentId + ", authorFlag=" + authorFlag + ", id=" + id
+				+ ", createTime=" + createTime + ", updateTime=" + updateTime + ", deleteFlag=" + deleteFlag + "]";
 	}
 
 }

@@ -2,12 +2,11 @@ package org.jchy.domain.dto;
 
 import java.util.Date;
 
-import org.jchy.bean.BaseDTO;
 import org.jchy.domain.po.Article;
 
-public class ArticleDTO extends BaseDTO {
+public class ArticleDTO {
 
-	private static final long serialVersionUID = 6887586086092428485L;
+	private Long id;
 
 	private String content; // 内容
 
@@ -43,7 +42,15 @@ public class ArticleDTO extends BaseDTO {
 		dto.setTitle(po.getTitle());
 		return dto;
 	}
-	
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getContent() {
 		return content;
 	}
@@ -118,9 +125,9 @@ public class ArticleDTO extends BaseDTO {
 
 	@Override
 	public String toString() {
-		return "ArticleDTO [content=" + content + ", title=" + title + ", summary=" + summary + ", authorId=" + authorId
-				+ ", status=" + status + ", readNum=" + readNum + ", likeNum=" + likeNum + ", commentNum=" + commentNum
-				+ ", postTime=" + postTime + ", id=" + id + "]";
+		return "ArticleDTO [id=" + id + ", content=" + content + ", title=" + title + ", summary=" + summary
+				+ ", authorId=" + authorId + ", status=" + status + ", readNum=" + readNum + ", likeNum=" + likeNum
+				+ ", commentNum=" + commentNum + ", postTime=" + postTime + "]";
 	}
-	
+
 }
