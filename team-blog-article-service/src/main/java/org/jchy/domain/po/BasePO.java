@@ -19,7 +19,7 @@ public abstract class BasePO implements Serializable {
 	protected Long id;
 
 	/** 记录创建时间 */
-	@Column(name = "createt_time")
+	@Column(name = "create_time")
 	protected Date createTime;
 
 	/** 记录修改时间 */

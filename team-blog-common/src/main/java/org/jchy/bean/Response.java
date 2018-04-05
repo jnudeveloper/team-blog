@@ -23,27 +23,31 @@ public class Response {
 	/** 返回封装对象 */
 	private Object data;
 	
-	public void ok(Object data) {
+	public Response ok(Object data) {
 		this.code = STATE_OK;
 		this.data = data;
+		return this;
 	}
 	
-	public void ok(Object data, String message) {
+	public Response ok(Object data, String message) {
 		this.message = message;
 		this.ok(data);
+		return this;
 	}
 	
-	public void unauthorized() {
+	public Response unauthorized() {
 		this.code = STATE_UNAUTHORIZED;
+		return this;
 	}
 	
-	public void failure(Exception ex) {
+	public Response failure(Exception ex) {
 		if (ex instanceof RuntimeException) { // TODO：定义异常体系
 			this.message = ex.getMessage();
 		} else {
 			this.code = STATE_ERROR;
 			this.message = "服务器繁忙，请稍后再试";
 		}
+		return this;
 	}
 	
 	public Response ok() {

@@ -2,21 +2,25 @@ package org.jchy.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
+import org.jchy.bean.PageBean;
+import org.jchy.constant.ArticleConsts;
 import org.jchy.dao.ArticleDAO;
 import org.jchy.domain.dto.ArticleDTO;
-import org.jchy.domain.dto.CommentDTO;
 import org.jchy.domain.po.Article;
 import org.jchy.domain.po.QArticle;
 import org.jchy.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Service("articleService")
@@ -36,34 +40,50 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public List<ArticleDTO> listArticles() {
-		List<Article> articles = articleDAO.findAll();
-		List<ArticleDTO> articleDTOs = new ArrayList<ArticleDTO>();
-		articles.forEach(a -> {
+	public List<ArticleDTO> listArticlesByStatus(Integer status) {
+		QArticle qArticle = QArticle.article;
+		List<ArticleDTO> articleDTOs = new ArrayList<>();
+		
+		queryFactory.select(qArticle)
+		.from(qArticle)
+		.where(qArticle.deleteFlag.eq(ArticleConsts.DELETED_FLAG_FALSE)
+		.and(qArticle.status.eq(status)))
+		.fetch()
+		.forEach(a -> {
 			articleDTOs.add(ArticleDTO.convertPO2DTO(a, new ArticleDTO()));
 		});
+		
 		return articleDTOs;
 	}
 
 	@Override
-	public List<ArticleDTO> listArticlesByAuthorId(Long authorId, int offset, int limit, boolean isDeleted) {
+	public PageBean<ArticleDTO> listPagedArticlesByStatus(Integer status, int offset, int limit) {
 		QArticle qArticle = QArticle.article;
-		List<ArticleDTO> articleDTOs = new ArrayList<>();
-
-		queryFactory.select(qArticle)
-					.from(qArticle)
-					.where(qArticle.deleteFlag.eq(isDeleted ? 1 : 0)
-					.and(qArticle.authorId.eq(authorId)))
-					.orderBy(qArticle.id.asc())
-					.offset(offset)
-					.limit(limit)
-					.fetchResults()
-					.getResults()
-					.forEach(a -> {
-						articleDTOs.add(ArticleDTO.convertPO2DTO(a, new ArticleDTO()));
-					});
+		Predicate predicate = qArticle.deleteFlag
+				.eq(ArticleConsts.DELETED_FLAG_FALSE)
+				.and(qArticle.status.eq(status));
+		Sort sort = new Sort(Sort.Direction.ASC, "id");
+		return listPagedArticlesByPredicate(predicate, offset, limit, sort);
+	}
+	
+	@Override
+	public PageBean<ArticleDTO> listPagedArticlesByAuthorIdAndStatus(
+			Long authorId, 
+			Integer status, 
+			int offset, 
+			int limit) {
+		QArticle qArticle = QArticle.article;
 		
-		return articleDTOs;
+		// 查询条件
+		Predicate predicate = qArticle.deleteFlag
+				.eq(ArticleConsts.DELETED_FLAG_FALSE)
+				.and(qArticle.authorId.eq(authorId))
+				.and(qArticle.status.eq(status));
+		
+		// 排序条件
+		Sort sort = new Sort(Sort.Direction.ASC, "id");
+		
+		return listPagedArticlesByPredicate(predicate, offset, limit, sort);
 	}
 
 	/**
@@ -71,25 +91,74 @@ public class ArticleServiceImpl implements ArticleService {
 	 * 
 	 * 比如先读取一条记录，set属性，再update对象，此时存在线程安全问题
 	 * 
-	 * TODO: 查询还需要加入状态条件，而不是简单地根据id查
 	 */
 	@Override
 	@Transactional
 	public ArticleDTO getArticleAndIncrReadNum(Long id) throws Exception {
-		Optional<Article> article = articleDAO.findById(id);
-		
-		if (!article.isPresent())
-			throw new Exception(); // TODO: 规划异常体系
+		QArticle qArticle = QArticle.article;
+		Article article = queryFactory.select(qArticle)
+				.distinct()
+				.from(qArticle)
+				.where(qArticle.deleteFlag
+				.eq(ArticleConsts.DELETED_FLAG_FALSE)
+				.and(qArticle.id.eq(id))
+				.and(qArticle.status.eq(ArticleConsts.STATUS_PUBLIC)))
+				.fetchOne();
 
+		if (article == null)
+			throw new Exception(); // TODO: 异常规划
+		
 		articleDAO.increaseReadNum(id); // 更新阅读量，db行级锁，线程安全
 
-		return ArticleDTO.convertPO2DTO(article.get(), new ArticleDTO());
+		return ArticleDTO.convertPO2DTO(article, new ArticleDTO());
 	}
 
 	@Override
-	public List<CommentDTO> listComments(Long articleId, int offset) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<ArticleDTO> listArticlesByTagNameAndStatus(String tagName, Integer status) {
+		QArticle qArticle = QArticle.article;
+		
+		List<ArticleDTO> articleDTOs = new ArrayList<>();
+		
+		Predicate predicate = qArticle.deleteFlag
+				.eq(ArticleConsts.DELETED_FLAG_FALSE)
+				.and(qArticle.status.eq(ArticleConsts.STATUS_PUBLIC));
+		
+		articleDAO.findAll(predicate).forEach(a -> {
+			articleDTOs.add(ArticleDTO.convertPO2DTO(a, new ArticleDTO()));
+		});
+		
+		return articleDTOs;
 	}
 
+	/**
+	 * 抽取公共方法
+	 * 
+	 * @param predicate
+	 * @param offset
+	 * @param limit
+	 * @param sort
+	 * @return
+	 */
+	private PageBean<ArticleDTO> listPagedArticlesByPredicate(
+			Predicate predicate, 
+			int offset, 
+			int limit,
+			Sort sort) {
+		List<ArticleDTO> articleDTOs = new ArrayList<>();
+		
+		// 得到结果为PageRequest对象
+		Page<Article> articles = articleDAO.findAll(predicate, PageRequest.of(offset, limit, sort));
+		
+		// 将PageRequest内部的po list转成 dto list
+		articles.stream().forEach(a -> {
+			articleDTOs.add(ArticleDTO.convertPO2DTO(a, new ArticleDTO()));
+		});
+		
+		return new PageBean<ArticleDTO>(
+				articleDTOs, 
+				articles.getNumber(), 
+				articles.getSize(), 
+				articles.getTotalPages());
+	}
+	
 }

@@ -2,8 +2,8 @@ package org.jchy.service;
 
 import java.util.List;
 
+import org.jchy.bean.PageBean;
 import org.jchy.domain.dto.ArticleDTO;
-import org.jchy.domain.dto.CommentDTO;
 
 /**
  * 
@@ -14,11 +14,23 @@ import org.jchy.domain.dto.CommentDTO;
 public interface ArticleService {
 
 	/**
-	 * 毫无保留地展示所有文章
+	 * 根据状态查询所有文章
 	 * 
 	 * @return
 	 */
-	List<ArticleDTO> listArticles();
+	List<ArticleDTO> listArticlesByStatus(Integer status);
+	
+
+	/**
+	 * 分页查询多条文章
+	 * 
+	 * @param authorId
+	 * @param status
+	 * @param offset
+	 * @param limit
+	 * @return
+	 */
+	PageBean<ArticleDTO> listPagedArticlesByStatus(Integer status, int offset, int limit);
 	
 	/**
 	 * 根据用户id获取多条文章，分页默认10，按时间降序，需要注意状态位
@@ -29,8 +41,17 @@ public interface ArticleService {
 	 * @param isDeleted
 	 * @return
 	 */
-	List<ArticleDTO> listArticlesByAuthorId(Long authorId, int offset, int limit, boolean isDeleted);
+	PageBean<ArticleDTO> listPagedArticlesByAuthorIdAndStatus(Long authorId, Integer status, int offset, int limit);
 
+	/**
+	 * 根据标签名查询多条文章
+	 * 
+	 * @param tagName
+	 * @param status
+	 * @return
+	 */
+	List<ArticleDTO> listArticlesByTagNameAndStatus(String tagName, Integer status);
+	
 	/**
 	 * 根据文章id获取单条文章，同时更新阅读数
 	 * 
@@ -38,14 +59,6 @@ public interface ArticleService {
 	 * @return
 	 * @throws Exception
 	 */
-	ArticleDTO getArticleAndIncrReadNum(Long articleId) throws Exception;
-
-	/**
-	 * 根据文章id获取多条评论，分页10
-	 * 
-	 * @param id
-	 * @return
-	 */
-	List<CommentDTO> listComments(Long articleId, int offset);
+	ArticleDTO getArticleAndIncrReadNum(Long id) throws Exception;
 
 }

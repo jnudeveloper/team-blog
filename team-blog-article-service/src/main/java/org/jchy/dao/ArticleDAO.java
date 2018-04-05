@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ArticleDAO extends JpaRepository<Article, Long> , QuerydslPredicateExecutor<Article> {
 	
 	@Query(value = "update t_article a set a.read_num = a.read_num + 1 where a.id = :id", nativeQuery = true)
-	@Transactional
+	@Transactional // TODO: Transactional注解的处理
 	@Modifying(clearAutomatically = true)
 	int increaseReadNum(@Param("id") Long id);
 

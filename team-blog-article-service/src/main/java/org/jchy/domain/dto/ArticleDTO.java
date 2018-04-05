@@ -1,6 +1,8 @@
 package org.jchy.domain.dto;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jchy.domain.po.Article;
 
@@ -20,12 +22,12 @@ public class ArticleDTO {
 
 	private Integer readNum; // 访问次数
 
-	private Integer likeNum; // 点赞次数
-
 	private Integer commentNum; // 评论次数
 
 	private Date postTime; // 发布时间
-
+	
+	private Set<String> tagNameSet = new HashSet<>(); // 标签名称
+	
 	/**
 	 * TODO: 重构成公共方法
 	 */
@@ -34,12 +36,16 @@ public class ArticleDTO {
 		dto.setAuthorId(po.getAuthorId());
 		dto.setCommentNum(po.getCommentNum());
 		dto.setContent(po.getContent());
-		dto.setLikeNum(po.getLikeNum());
 		dto.setPostTime(po.getPostTime());
 		dto.setReadNum(po.getReadNum());
 		dto.setStatus(po.getStatus());
 		dto.setSummary(po.getSummary());
 		dto.setTitle(po.getTitle());
+		if (po.getTagSet() != null) {
+			po.getTagSet().forEach(t -> {
+				dto.getTagNameSet().add(t.getName());
+			});
+		}
 		return dto;
 	}
 
@@ -99,14 +105,6 @@ public class ArticleDTO {
 		this.readNum = readNum;
 	}
 
-	public Integer getLikeNum() {
-		return likeNum;
-	}
-
-	public void setLikeNum(Integer likeNum) {
-		this.likeNum = likeNum;
-	}
-
 	public Integer getCommentNum() {
 		return commentNum;
 	}
@@ -123,11 +121,19 @@ public class ArticleDTO {
 		this.postTime = postTime;
 	}
 
+	public Set<String> getTagNameSet() {
+		return tagNameSet;
+	}
+
+	public void setTagNameSet(Set<String> tagNameSet) {
+		this.tagNameSet = tagNameSet;
+	}
+
 	@Override
 	public String toString() {
 		return "ArticleDTO [id=" + id + ", content=" + content + ", title=" + title + ", summary=" + summary
-				+ ", authorId=" + authorId + ", status=" + status + ", readNum=" + readNum + ", likeNum=" + likeNum
-				+ ", commentNum=" + commentNum + ", postTime=" + postTime + "]";
+				+ ", authorId=" + authorId + ", status=" + status + ", readNum=" + readNum + ", commentNum="
+				+ commentNum + ", postTime=" + postTime + ", tagNameSet=" + tagNameSet + "]";
 	}
 
 }

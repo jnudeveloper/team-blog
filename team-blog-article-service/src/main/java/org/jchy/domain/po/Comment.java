@@ -1,15 +1,25 @@
 package org.jchy.domain.po;
 
+import java.io.Serializable;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "t_comment")
-public class Comment extends BasePO {
+public class Comment implements Serializable {
 
-	private static final long serialVersionUID = 6462826635034807985L;
+	private static final long serialVersionUID = 5409850539969779977L;
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
+	
 	/** 评论发起人的id */
 	@Column(name = "commenter_id")
 	private Long commenterId;
@@ -32,6 +42,9 @@ public class Comment extends BasePO {
 	/** 是否由作者发起 */
 	private Integer authorFlag;
 
+	/** 评论发起时间 */
+	private Date createTime;
+	
 	public Long getCommenterId() {
 		return commenterId;
 	}
@@ -72,14 +85,6 @@ public class Comment extends BasePO {
 		this.parentId = parentId;
 	}
 
-	public Integer getDeleteFlag() {
-		return deleteFlag;
-	}
-
-	public void setDeleteFlag(Integer deleteFlag) {
-		this.deleteFlag = deleteFlag;
-	}
-
 	public Integer getAuthorFlag() {
 		return authorFlag;
 	}
@@ -88,11 +93,27 @@ public class Comment extends BasePO {
 		this.authorFlag = authorFlag;
 	}
 
-	@Override
-	public String toString() {
-		return "Comment [commenterId=" + commenterId + ", articleId=" + articleId + ", commenterName=" + commenterName
-				+ ", text=" + text + ", parentId=" + parentId + ", authorFlag=" + authorFlag + ", id=" + id
-				+ ", createTime=" + createTime + ", updateTime=" + updateTime + ", deleteFlag=" + deleteFlag + "]";
+	public Long getId() {
+		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	@Override
+	public String toString() {
+		return "Comment [id=" + id + ", commenterId=" + commenterId + ", articleId=" + articleId + ", commenterName="
+				+ commenterName + ", text=" + text + ", parentId=" + parentId + ", authorFlag=" + authorFlag
+				+ ", createTime=" + createTime + "]";
+	}
+	
 }

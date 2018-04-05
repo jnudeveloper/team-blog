@@ -39,10 +39,6 @@ public class Article extends BasePO {
 	@Column(name = "read_num")
 	private Integer readNum;
 
-	/** 点赞次数 */
-	@Column(name = "like_num")
-	private Integer likeNum;
-
 	/** 评论次数 */
 	@Column(name = "comment_num")
 	private Integer commentNum;
@@ -56,8 +52,8 @@ public class Article extends BasePO {
 
 	@ManyToMany(targetEntity = Tag.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "tb_article_tag",
-			   joinColumns = @JoinColumn(name = "article_id"), 
-			   inverseJoinColumns = @JoinColumn(name = "tag_id"))
+			   joinColumns = @JoinColumn(name = "article_id", referencedColumnName = "id"), 
+			   inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
 	private Set<Tag> tagSet = new HashSet<>();
 	
 	public String getContent() {
@@ -118,17 +114,6 @@ public class Article extends BasePO {
 		this.readNum = readNum;
 	}
 
-
-	public Integer getLikeNum() {
-		return likeNum;
-	}
-
-
-	public void setLikeNum(Integer likeNum) {
-		this.likeNum = likeNum;
-	}
-
-
 	public Integer getCommentNum() {
 		return commentNum;
 	}
@@ -171,9 +156,9 @@ public class Article extends BasePO {
 	@Override
 	public String toString() {
 		return "Article [content=" + content + ", title=" + title + ", summary=" + summary + ", authorId=" + authorId
-				+ ", status=" + status + ", readNum=" + readNum + ", likeNum=" + likeNum + ", commentNum=" + commentNum
-				+ ", order=" + order + ", postTime=" + postTime + ", tagSet=" + tagSet + ", id=" + id + ", createTime="
-				+ createTime + ", updateTime=" + updateTime + ", deleteFlag=" + deleteFlag + "]";
+				+ ", status=" + status + ", readNum=" + readNum + ", commentNum=" + commentNum + ", order=" + order
+				+ ", postTime=" + postTime + ", tagSet=" + tagSet + ", id=" + id + ", createTime=" + createTime
+				+ ", updateTime=" + updateTime + ", deleteFlag=" + deleteFlag + "]";
 	}
 	
 }
